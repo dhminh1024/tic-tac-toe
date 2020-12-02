@@ -1,7 +1,7 @@
 import React from "react";
-import { useState } from "react";
 import { Container, Row, Col, Button } from "react-bootstrap";
 import Board from "./Board";
+import useLocalStorageState from "../utils/useLocalStorageState";
 
 function getNextValue(squares) {
   // Your code here
@@ -40,46 +40,65 @@ function getStatus(squares, winner, nextValue) {
 }
 
 const Game = () => {
-  const [squares, setSquares] = useState(Array(9).fill(null));
+  // const [squares, setSquares] = useState(Array(9).fill(null));
 
   // States needed for saving history of moves
-  // const [history, setHistory] = useState([Array(9).fill(null)]);
-  // const [currentStep, setCurrentStep] = useState(0);
-  // const currentSquares = history[currentStep];
+  const [history, setHistory] = useLocalStorageState("ttt_history", [
+    Array(9).fill(null),
+  ]);
+  const [currentStep, setCurrentStep] = useLocalStorageState("ttt_step", 0);
+  const currentSquares = history[currentStep];
 
   // This state determines the next value is X or O?
-  const nextValue = getNextValue(squares);
+  const nextValue = getNextValue(currentSquares);
   // This state determines who is the winner
-  const winner = getWinner(squares);
+  const winner = getWinner(currentSquares);
   // This state determines the status showing who is on the turn
-  const status = getStatus(squares, winner, nextValue);
+  const status = getStatus(currentSquares, winner, nextValue);
 
   const clickSquare = (index) => {
     // Your code here
     // You can modify this code below
-    if (winner || squares[index]) return;
-    const squaresCopy = [...squares];
+    // if (winner || squares[index]) return;
+
+    // const squaresCopy = [...squares];
+    // squaresCopy[index] = nextValue;
+    // setSquares(squaresCopy);
+
+    if (winner || currentSquares[index]) return;
+
+    const newHistory = history.slice(0, currentStep + 1);
+    const squaresCopy = [...currentSquares];
     squaresCopy[index] = nextValue;
-    setSquares(squaresCopy);
+    setHistory([...newHistory, squaresCopy]);
+    setCurrentStep(newHistory.length);
   };
 
   const restartGame = () => {
     // Your code here
-    setSquares(Array(9).fill(null));
+    // setSquares(Array(9).fill(null));
+
+    setHistory([Array(9).fill(null)]);
+    setCurrentStep(0);
   };
 
   // Create the list of moves in history
-  // const moves = history.___((squares, step) => {
-  //   const description = step ? ___ : ___;
-  //   const isCurrentStep = step === ___;
-  //   return (
-  //     <li key={step}>
-  //       <Button disabled={currentStep} onClick={() => setCurrentStep(step)}>
-  //         {desc} {isCurrentStep ? "(current)": null}
-  //       </Button>
-  //     </li>
-  //   )
-  // })
+  const moves = history.map((squares, step) => {
+    const description = step ? `Go to move ${step}` : `Go to game start`;
+    const isCurrentStep = step === currentStep;
+    return (
+      <li key={step}>
+        <Button
+          variant="outline-success"
+          size="sm"
+          disabled={step === currentStep}
+          onClick={() => setCurrentStep(step)}
+        >
+          {description} {isCurrentStep ? "(current)" : null}
+        </Button>
+      </li>
+    );
+  });
 
   return (
     <Container>
@@ -92,7 +111,7 @@ const Game = () => {
       </Row>
       <Row>
         <Col md={6}>
-          <Board squares={squares} onClick={clickSquare} />
+          <Board squares={currentSquares} onClick={clickSquare} />
           <div>
             <strong>Winner: {winner}</strong>
           </div>
@@ -102,7 +121,7 @@ const Game = () => {
             <strong>{status}</strong>
           </div>
           {/* The list of moves */}
-          {/* <ol>{moves}</ol> */}
+          <ol>{moves}</ol>
         </Col>
       </Row>
     </Container>
