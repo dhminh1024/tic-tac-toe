@@ -68,13 +68,12 @@ const Game = () => {
         <Col md={6}>
           <Board squares={squares} onClick={clickSquare} />
           <div>
-            <strong>Winner:</strong>
-            {winner}
+            <strong>Winner: {winner}</strong>
           </div>
         </Col>
         <Col md={6}>
           <div>
-            <strong>Next player:</strong> {status}
+            <strong>{status}</strong>
           </div>
           {/* The list of moves */}
           {/* <ol>{moves}</ol> */}
