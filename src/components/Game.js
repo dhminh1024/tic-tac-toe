@@ -1,5 +1,4 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 import { Container, Row, Col, Button } from "react-bootstrap";
 import Board from "./Board";
 
@@ -48,12 +47,17 @@ const Game = () => {
   //   const isCurrentStep = step === ___;
   //   return (
   //     <li key={step}>
-  //       <Button disabled={currentStep} onClick={() => setCurrentStep(step)}>
-  //         {desc} {isCurrentStep ? "(current)": null}
+  //       <Button
+  //         variant="outline-success"
+  //         size="sm"
+  //         disabled={isCurrentStep}
+  //         onClick={() => setCurrentStep(step)}
+  //       >
+  //         {description} {isCurrentStep ? "(current)" : null}
   //       </Button>
   //     </li>
-  //   )
-  // })
+  //   );
+  // });
 
   return (
     <Container>
