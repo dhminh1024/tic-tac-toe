@@ -5,14 +5,38 @@ import Board from "./Board";
 
 function getNextValue(squares) {
   // Your code here
+  const countX = squares.filter((s) => s === "X").length;
+  const countO = squares.filter((s) => s === "O").length;
+  return countX === countO ? "X" : "O";
 }
 
 function getWinner(squares) {
   // Your code here
+  const lines = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6],
+  ];
+  for (let i = 0; i < lines.length; i++) {
+    const [a, b, c] = lines[i];
+    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
+      return squares[a];
+    }
+  }
 }
 
 function getStatus(squares, winner, nextValue) {
   // Your code here
+  return winner
+    ? `Winner: ${winner}`
+    : squares.filter((s) => s === null).length === 0
+    ? `Draw Game`
+    : `Next player: ${nextValue}`;
 }
 
 const Game = () => {
@@ -33,13 +57,15 @@ const Game = () => {
   const clickSquare = (index) => {
     // Your code here
     // You can modify this code below
+    if (winner || squares[index]) return;
     const squaresCopy = [...squares];
-    squaresCopy[index] = index;
+    squaresCopy[index] = nextValue;
     setSquares(squaresCopy);
   };
 
   const restartGame = () => {
     // Your code here
+    setSquares(Array(9).fill(null));
   };
 
   // Create the list of moves in history
@@ -68,13 +94,12 @@ const Game = () => {
         <Col md={6}>
           <Board squares={squares} onClick={clickSquare} />
           <div>
-            <strong>Winner:</strong>
-            {winner}
+            <strong>Winner: {winner}</strong>
           </div>
         </Col>
         <Col md={6}>
           <div>
-            <strong>Next player:</strong> {status}
+            <strong>{status}</strong>
           </div>
           {/* The list of moves */}
           {/* <ol>{moves}</ol> */}
